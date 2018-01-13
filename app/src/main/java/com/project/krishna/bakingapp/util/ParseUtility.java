@@ -103,6 +103,8 @@ public class ParseUtility {
                 String servings=object.getString(RECIPE_SERVINGS);
                 recipeDetails.setServings(servings);
                 recipeDetails.setStepsList(stepsList);
+                String name=object.getString(RECIPE_NAME);
+                recipeDetails.setrName(name);
 
             }
 

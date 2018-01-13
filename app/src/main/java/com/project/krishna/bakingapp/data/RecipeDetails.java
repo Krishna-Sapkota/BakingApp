@@ -10,10 +10,14 @@ import java.util.List;
 public class RecipeDetails  {
 
     private String id;
+    private String rName;
     private String servings;
     private List<Ingredients> ingredientsList;
     private List<Steps> stepsList;
 
+    public RecipeDetails(){
+
+    }
 
     public List<Ingredients> getIngredientsList() {
         return ingredientsList;
@@ -32,8 +36,13 @@ public class RecipeDetails  {
     }
 
 
-    public RecipeDetails(){
 
+    public String getrName() {
+        return rName;
+    }
+
+    public void setrName(String rName) {
+        this.rName = rName;
     }
 
     public String getId() {
