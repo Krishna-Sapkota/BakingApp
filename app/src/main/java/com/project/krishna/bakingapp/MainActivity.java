@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.project.krishna.bakingapp.data.RecipeDetails;
 import com.project.krishna.bakingapp.data.RecipeListAdapter;
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     RecyclerView.LayoutManager layoutManager;
     RecipeListAdapter adapter;
     List<Recipes> recipes;
-    String jsonRecipe;
+    private static String jsonRecipe;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,9 +110,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onRecipeClick(int position) {
         String recipeId=recipes.get(position).getId();
-        Intent recipeStepsActivity=new Intent(this,RecipeDetailsActivity.class);
+        Intent recipeStepsActivity=new Intent(this,DetailsActivity.class);
         recipeStepsActivity.putExtra(CLICKED_RECIPE,recipeId);
         recipeStepsActivity.putExtra(RECIPE_JSON,jsonRecipe);
+        if(jsonRecipe==null){
+            Log.i("TAG","null json");
+        }
         startActivity(recipeStepsActivity);
 
     }
