@@ -121,9 +121,7 @@ public class MasterRecipeDetailFragment extends Fragment implements RecipeDetail
     public void onLoadFinished(Loader<RecipeDetails> loader, RecipeDetails data) {
         Log.i("TAG","load finished");
         recipeDetails=data;
-        if(recipeDetails==null){
-            Log.i("TAG","NULL BIG");
-        }
+        headingText.setText(recipeDetails.getrName());
         RecipeDetailsAdapter detailsAdapter=new RecipeDetailsAdapter(getActivity(),recipeDetails,MasterRecipeDetailFragment.this);
         detailsRecycler.setAdapter(detailsAdapter);
 

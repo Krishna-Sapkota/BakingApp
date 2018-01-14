@@ -1,5 +1,6 @@
 package com.project.krishna.bakingapp;
 
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -43,8 +44,10 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
     TextView mStepsText;
+    TextView errorText;
     private static String videoUrl;
     private static String longDes;
+    boolean videoAvailable=true;
 
     public VideoPlayerFragment(){
 
@@ -75,11 +78,25 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
         mPlayerView =  rootView.findViewById(R.id.playerView);
         mStepsText=rootView.findViewById(R.id.tv_steps);
+        errorText=rootView.findViewById(R.id.tv_video_error);
 
-        initializeMediaSession();
+
         Uri videoUri= Uri.parse(videoUrl);
-        initializePlayer(videoUri);
+        if(videoUrl.equals("")||videoUrl==null){
+            videoAvailable=false;
+        }
         mStepsText.setText(longDes);
+        if(!videoAvailable){
+            errorText.setVisibility(View.VISIBLE);
+            errorText.setTextColor(Color.WHITE);
+            errorText.setText(R.string.video_not_available_message);
+        }
+        else {
+            initializeMediaSession();
+            initializePlayer(videoUri);
+            errorText.setVisibility(View.INVISIBLE);
+        }
+
         return rootView;
     }
 
@@ -194,9 +211,11 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
         }
     }
     private void releasePlayer() {
-        mExoPlayer.stop();
-        mExoPlayer.release();
-        mExoPlayer = null;
+        if(mExoPlayer!=null) {
+            mExoPlayer.stop();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
     }
 
     /**
@@ -206,6 +225,7 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
     public void onDestroy() {
         super.onDestroy();
         releasePlayer();
+        if(mMediaSession!=null)
         mMediaSession.setActive(false);
     }
 

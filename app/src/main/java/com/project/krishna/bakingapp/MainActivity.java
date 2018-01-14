@@ -7,8 +7,10 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.project.krishna.bakingapp.data.RecipeDetails;
@@ -38,13 +40,28 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recipeListRecycler=findViewById(R.id.rv_recipe_list);
-        layoutManager=new LinearLayoutManager(this);
+        if(findViewById(R.id.landscape_layout)!=null){
+            layoutManager=new GridLayoutManager(this,numberOfColumns());
+        }
+        else {
+            layoutManager = new LinearLayoutManager(this);
+        }
         recipeListRecycler.setLayoutManager(layoutManager);
 
         getSupportLoaderManager().initLoader(RECIPE_LOADER,null,this);
 
 
 
+    }
+    private int numberOfColumns() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        // You can change this divider to adjust the size of the poster
+        int widthDivider = 400;
+        int width = displayMetrics.widthPixels;
+        int nColumns = width / widthDivider;
+        if (nColumns < 2) return 2;
+        return nColumns;
     }
 
     @Override

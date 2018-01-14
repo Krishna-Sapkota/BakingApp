@@ -33,6 +33,8 @@ import java.util.List;
 public class RecipeVideoActivity extends AppCompatActivity {
 
 
+    private static final String PLAYER_FRAG ="player_fragment" ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +50,7 @@ public class RecipeVideoActivity extends AppCompatActivity {
       playerFragment.setLongDes(longDes);
 
       getSupportFragmentManager().beginTransaction()
-              .add(R.id.player_container,playerFragment,"player")
+              .add(R.id.player_container,playerFragment,PLAYER_FRAG)
               .commit();
     }
 

@@ -6,11 +6,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
 
 import com.project.krishna.bakingapp.data.RecipeDetails;
+import com.project.krishna.bakingapp.util.ParseUtility;
+
+import org.json.JSONException;
 
 public class DetailsActivity extends AppCompatActivity implements MasterRecipeDetailFragment.OnRecipeStepsClickListener  {
     private static final String DETAILS ="detail_frag" ;
@@ -29,8 +33,8 @@ public class DetailsActivity extends AppCompatActivity implements MasterRecipeDe
         setContentView(R.layout.activity_details);
         recipeId=getIntent().getStringExtra(MainActivity.CLICKED_RECIPE);
         recipeJson=getIntent().getStringExtra(MainActivity.RECIPE_JSON);
-        videoUrl=getIntent().getStringExtra(VIDEO_URL);
-        longDes=getIntent().getStringExtra(LONG_DESCRIPTION);
+        //videoUrl=getIntent().getStringExtra(VIDEO_URL);
+        //longDes=getIntent().getStringExtra(LONG_DESCRIPTION);
 
 
 
@@ -44,15 +48,17 @@ public class DetailsActivity extends AppCompatActivity implements MasterRecipeDe
                     .add(R.id.recipe_list_container,detailFragment)
                     .commit();
             VideoPlayerFragment newFragment = new VideoPlayerFragment();
-            newFragment.setVideoUrl(videoUrl);
-            newFragment.setLongDes(longDes);
+            RecipeDetails details=null;
+            try {
+                details = ParseUtility.getRecipeDetails(recipeJson,recipeId);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            newFragment.setVideoUrl(details.getStepsList().get(0).getVideoUrl());
+            newFragment.setLongDes(details.getStepsList().get(0).getLongDescription());
             getSupportFragmentManager().beginTransaction()
-                   .replace(R.id.video_container, newFragment)
+                   .add(R.id.video_container, newFragment)
                    .commit();
-
-
-
-
         }
         else {
             twoPane=false;
@@ -95,5 +101,14 @@ public class DetailsActivity extends AppCompatActivity implements MasterRecipeDe
 
         }
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            onBackPressed();
+        }
+
+        return true;
     }
 }
