@@ -26,10 +26,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Recipes>>,RecipeListAdapter.RecipeClickListener {
     private static final int RECIPE_LOADER =10 ;
     public static final String CLICKED_RECIPE ="recipe_clicked" ;
     public static final String RECIPE_JSON ="recipe_json" ;
+    @BindView(R.id.rv_recipe_list)
     RecyclerView recipeListRecycler;
     RecyclerView.LayoutManager layoutManager;
     RecipeListAdapter adapter;
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         recipeListRecycler=findViewById(R.id.rv_recipe_list);
         if(findViewById(R.id.landscape_layout)!=null){
             layoutManager=new GridLayoutManager(this,numberOfColumns());

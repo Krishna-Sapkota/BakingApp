@@ -2,6 +2,8 @@ package com.project.krishna.bakingapp;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -21,6 +23,9 @@ import com.project.krishna.bakingapp.util.ParseUtility;
 
 import org.json.JSONException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Krishna on 1/14/18.
  */
@@ -30,10 +35,14 @@ public class MasterRecipeDetailFragment extends Fragment implements RecipeDetail
     public static final String VIDEO_URL ="video_url" ;
     public static final String LONG_DESCRIPTION ="long_des" ;
     private static final int DETAILS_LOADER =12;
-    RecyclerView detailsRecycler;
+    private static final String LIST_STATE ="list_state" ;
+    @BindView(R.id.rv_recipe_details) RecyclerView detailsRecycler;
     RecyclerView.LayoutManager layoutManager;
     RecipeDetails recipeDetails=null;
-    TextView headingText;
+    @BindView(R.id.tv_recipe_heading) TextView headingText;
+    private Parcelable scrollState;
+    private  String recipeId;
+    private  String recipeJson;
 
     public String getRecipeId() {
         return recipeId;
@@ -51,8 +60,7 @@ public class MasterRecipeDetailFragment extends Fragment implements RecipeDetail
         this.recipeJson = recipeJson;
     }
 
-    private  String recipeId;
-    private  String recipeJson;
+
 
     public MasterRecipeDetailFragment(){
 
@@ -73,13 +81,30 @@ public class MasterRecipeDetailFragment extends Fragment implements RecipeDetail
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_master_recipe_detail, container, false);
-
-        detailsRecycler=rootView.findViewById(R.id.rv_recipe_details);
-        headingText=rootView.findViewById(R.id.tv_recipe_heading);
+        ButterKnife.bind(this,rootView);
         layoutManager=new LinearLayoutManager(getContext());
         detailsRecycler.setLayoutManager(layoutManager);
         getActivity().getSupportLoaderManager().initLoader(DETAILS_LOADER,null,this);
         return rootView;
+
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(LIST_STATE,detailsRecycler.getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState!=null) {
+            scrollState = savedInstanceState.getParcelable(LIST_STATE);
+            detailsRecycler.getLayoutManager().onRestoreInstanceState(scrollState);
+            Log.i("TAG","restored");
+
+        }
 
     }
 
@@ -124,6 +149,7 @@ public class MasterRecipeDetailFragment extends Fragment implements RecipeDetail
         headingText.setText(recipeDetails.getrName());
         RecipeDetailsAdapter detailsAdapter=new RecipeDetailsAdapter(getActivity(),recipeDetails,MasterRecipeDetailFragment.this);
         detailsRecycler.setAdapter(detailsAdapter);
+
 
     }
 

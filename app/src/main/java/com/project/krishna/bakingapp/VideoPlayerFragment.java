@@ -33,6 +33,9 @@ import com.google.android.exoplayer2.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Krishna on 1/14/18.
  */
@@ -40,10 +43,13 @@ import java.util.List;
 public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventListener {
     private static final java.lang.String TAG =RecipeVideoActivity.class.getSimpleName() ;
     private SimpleExoPlayer mExoPlayer;
-    private SimpleExoPlayerView mPlayerView;
+    @BindView(R.id.playerView)
+    SimpleExoPlayerView mPlayerView;
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
+    @BindView(R.id.tv_steps)
     TextView mStepsText;
+    @BindView(R.id.tv_video_error)
     TextView errorText;
     private static String videoUrl;
     private static String longDes;
@@ -76,11 +82,7 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
-        mPlayerView =  rootView.findViewById(R.id.playerView);
-        mStepsText=rootView.findViewById(R.id.tv_steps);
-        errorText=rootView.findViewById(R.id.tv_video_error);
-
-
+        ButterKnife.bind(this,rootView);
         Uri videoUri= Uri.parse(videoUrl);
         if(videoUrl.equals("")||videoUrl==null){
             videoAvailable=false;
