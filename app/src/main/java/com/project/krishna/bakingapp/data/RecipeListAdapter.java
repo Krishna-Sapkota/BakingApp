@@ -6,11 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.project.krishna.bakingapp.R;
 
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Krishna on 1/11/18.
@@ -58,10 +60,11 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
     }
 
     public class RecipeViewHolder extends RecyclerView.ViewHolder   implements View.OnClickListener {
+        @BindView(R.id.tv_recipe_name)
         Button recipeName;
         public RecipeViewHolder(View itemView) {
             super(itemView);
-            recipeName=itemView.findViewById(R.id.tv_recipe_name);
+            ButterKnife.bind(this,itemView);
             recipeName.setOnClickListener(this);
         }
 

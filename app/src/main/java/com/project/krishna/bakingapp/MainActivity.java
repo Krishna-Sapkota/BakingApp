@@ -1,21 +1,30 @@
 package com.project.krishna.bakingapp;
 
+import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
-import com.project.krishna.bakingapp.data.RecipeDetails;
 import com.project.krishna.bakingapp.data.RecipeListAdapter;
 import com.project.krishna.bakingapp.data.Recipes;
+import com.project.krishna.bakingapp.idlingresource.SimpleIdlingResource;
 import com.project.krishna.bakingapp.util.NetworkUtility;
 import com.project.krishna.bakingapp.util.ParseUtility;
 
@@ -35,28 +44,71 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final String RECIPE_JSON ="recipe_json" ;
     @BindView(R.id.rv_recipe_list)
     RecyclerView recipeListRecycler;
+    @Nullable @BindView(R.id.landscape_layout)
+    FrameLayout landscapeLayout;
+    @Nullable@BindView(R.id.tv_internet_error)
+    TextView internetError;
     RecyclerView.LayoutManager layoutManager;
     RecipeListAdapter adapter;
     List<Recipes> recipes;
     private static String jsonRecipe;
+
+    @Nullable
+    private SimpleIdlingResource mIdlingResource;
+
+    /**
+     * Only called from test, creates and returns a new {@link SimpleIdlingResource}.
+     */
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         recipeListRecycler=findViewById(R.id.rv_recipe_list);
-        if(findViewById(R.id.landscape_layout)!=null){
+        if(landscapeLayout!=null){
             layoutManager=new GridLayoutManager(this,numberOfColumns());
         }
         else {
             layoutManager = new LinearLayoutManager(this);
         }
         recipeListRecycler.setLayoutManager(layoutManager);
+        if(isOnline()) {
+            internetError.setVisibility(View.GONE);
+            getSupportLoaderManager().initLoader(RECIPE_LOADER, null, this);
+        }
+        else {
+            internetError.setVisibility(View.VISIBLE);
+            internetError.setText(R.string.internet_error_string);
+        }
 
-        getSupportLoaderManager().initLoader(RECIPE_LOADER,null,this);
 
 
+    }
 
+    /**
+     checking online code used from
+     https://www.google.com/url?q=http://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-timeouts&sa=D&ust=1510813688269000&usg=AFQjCNF0VNbteS1wdDxpwk5kwL7t-zQlyA
+     **/
+
+    private boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert cm != null;
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if(netInfo==null||!netInfo.isConnected()){
+            return false;
+        }
+        else {
+            return true;
+        }
     }
     private int numberOfColumns() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
