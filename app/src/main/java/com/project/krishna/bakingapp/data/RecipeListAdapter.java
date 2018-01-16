@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.project.krishna.bakingapp.R;
 
 import java.util.List;
@@ -48,7 +50,15 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
     @Override
     public void onBindViewHolder(RecipeViewHolder holder, int position) {
         String name=recipesList.get(position).getName();
+        String thumbnailURL=recipesList.get(position).getThumnailURL();
+
+
+            Glide.with(mContext)
+                    .load(thumbnailURL)
+                    .into(holder.recipeImage);
+
         holder.recipeName.setText(name);
+
 
     }
 
@@ -62,6 +72,8 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
     public class RecipeViewHolder extends RecyclerView.ViewHolder   implements View.OnClickListener {
         @BindView(R.id.tv_recipe_name)
         Button recipeName;
+        @BindView(R.id.iv_recipe_image)
+        ImageView recipeImage;
         public RecipeViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);

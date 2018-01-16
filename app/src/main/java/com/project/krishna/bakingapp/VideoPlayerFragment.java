@@ -7,11 +7,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -30,9 +32,6 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -42,6 +41,8 @@ import butterknife.ButterKnife;
 
 public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventListener {
     private static final java.lang.String TAG =RecipeVideoActivity.class.getSimpleName() ;
+    private static final String PLAYER_POSITION ="player_position" ;
+    private static final String PLAYER_STATE ="pstate";
     private SimpleExoPlayer mExoPlayer;
     @BindView(R.id.playerView)
     SimpleExoPlayerView mPlayerView;
@@ -54,6 +55,10 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
     private static String videoUrl;
     private static String longDes;
     boolean videoAvailable=true;
+    static boolean playWhenReady=true;
+    static long position;
+    Bundle videoPlayerPosition;
+    Uri videoUri;
 
     public VideoPlayerFragment(){
 
@@ -83,7 +88,13 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
 
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
         ButterKnife.bind(this,rootView);
-        Uri videoUri= Uri.parse(videoUrl);
+        videoPlayerPosition=new Bundle();
+        position = C.TIME_UNSET;
+        if (savedInstanceState != null) {
+            position = savedInstanceState.getLong(PLAYER_POSITION, C.TIME_UNSET);
+            playWhenReady=savedInstanceState.getBoolean(PLAYER_STATE);
+            Log.i("VID","oncreate"+position);
+        }
         if(videoUrl.equals("")||videoUrl==null){
             videoAvailable=false;
         }
@@ -94,6 +105,7 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
             errorText.setText(R.string.video_not_available_message);
         }
         else {
+            videoUri= Uri.parse(videoUrl);
             initializeMediaSession();
             initializePlayer(videoUri);
             errorText.setVisibility(View.INVISIBLE);
@@ -150,8 +162,17 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
             String userAgent = Util.getUserAgent(getContext(), "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
+            Log.i("VID","initializeplayer"+position);
+
+            if (position != C.TIME_UNSET){
+                Log.i("VID","seeking");
+
+                mExoPlayer.seekTo(position);
+            }
+
             mExoPlayer.prepare(mediaSource);
-            mExoPlayer.setPlayWhenReady(true);
+
+            mExoPlayer.setPlayWhenReady(playWhenReady);
         }
     }
 
@@ -217,6 +238,35 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer = null;
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(PLAYER_POSITION,position);
+        outState.putBoolean(PLAYER_STATE,playWhenReady);
+    }
+
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(videoUri!=null)
+        initializePlayer(videoUri);
+
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mExoPlayer != null) {
+            position = mExoPlayer.getCurrentPosition();
+            playWhenReady=mExoPlayer.getPlayWhenReady();
+            Log.i("VID","onpause"+position);
+            releasePlayer();
         }
     }
 

@@ -1,7 +1,5 @@
 package com.project.krishna.bakingapp.util;
 
-import android.util.Log;
-
 import com.project.krishna.bakingapp.data.Ingredients;
 import com.project.krishna.bakingapp.data.RecipeDetails;
 import com.project.krishna.bakingapp.data.Recipes;
@@ -31,6 +29,7 @@ public class ParseUtility {
     private static final String LONG_DES ="description" ;
     private static final String VIDEO ="videoURL";
     private static final String STEP_ID ="id" ;
+    private static final String RECIPE_IMAGE ="image" ;
 
 
     public static List<Recipes> getRecipeList(String recipeJson) throws JSONException {
@@ -47,9 +46,11 @@ public class ParseUtility {
             String id=object.getString(RECIPE_ID);
             String name=object.getString(RECIPE_NAME);
             String servings=object.getString(RECIPE_SERVINGS);
+            String thumbnailURL=object.getString(RECIPE_IMAGE);
             r.setId(id);
             r.setName(name);
             r.setServings(servings);
+            r.setThumnailURL(thumbnailURL);
             recipesList.add(r);
         }
         return  recipesList;

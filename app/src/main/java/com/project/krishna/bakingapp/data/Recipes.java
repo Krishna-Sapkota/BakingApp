@@ -9,6 +9,18 @@ public class Recipes {
     String name;
     String servings;
 
+
+
+    String thumnailURL;
+
+    public String getThumnailURL() {
+        return thumnailURL;
+    }
+
+    public void setThumnailURL(String thumnailURL) {
+        this.thumnailURL = thumnailURL;
+    }
+
     public String getId() {
         return id;
     }
