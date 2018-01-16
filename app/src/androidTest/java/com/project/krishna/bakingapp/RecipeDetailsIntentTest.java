@@ -24,7 +24,7 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCom
  * Created by Krishna on 1/15/18.
  */
 @RunWith(AndroidJUnit4.class)
-public class RecipeDetailsActivityTest {
+public class RecipeDetailsIntentTest {
     private static final String recipeId="1";
     IdlingResource idlingResource;
     @Rule

@@ -17,7 +17,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -187,9 +186,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Intent recipeStepsActivity=new Intent(this,DetailsActivity.class);
         recipeStepsActivity.putExtra(CLICKED_RECIPE,recipeId);
         recipeStepsActivity.putExtra(RECIPE_JSON,jsonRecipe);
-        if(jsonRecipe==null){
-            Log.i("TAG","null json");
-        }
+
+       /* Intent intent = new Intent(this, BakingAppWidget.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intent.putExtra(CLICKED_RECIPE,recipeId);
+        intent.putExtra(RECIPE_JSON,jsonRecipe);
+        //intent.setAction("android.appwidget.action.APPWIDGET_UPDATE2");
+        sendBroadcast(intent);*/
+       WidgetUpdateService.startBakingService(this,recipeId,jsonRecipe);
+
+
+
         startActivity(recipeStepsActivity);
 
     }
