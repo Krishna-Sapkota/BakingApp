@@ -28,7 +28,6 @@ public class BakingAppWidget extends AppWidgetProvider {
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.baking_app_widget);
 
-        //call activity when widget is clicked, but resume activity from stack so you do not pass intent.extras afresh
         Intent appIntent = new Intent(context, DetailsActivity.class);
         appIntent.addCategory(Intent.ACTION_MAIN);
         appIntent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -36,22 +35,17 @@ public class BakingAppWidget extends AppWidgetProvider {
         PendingIntent appPendingIntent = PendingIntent.getActivity(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setPendingIntentTemplate(R.id.widget_grid_view, appPendingIntent);
 
-        // Set the GridWidgetService intent to act as the adapter for the GridView
-        Log.i("BRD","Broadcast 123");
+        Log.i("BRD","Broadcast");
 
         Intent intent = new Intent(context, GridWidgetService.class);
         views.setRemoteAdapter(R.id.widget_grid_view, intent);
 
-        // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        // There may be multiple widgets active, so update all of them
-      //  for (int appWidgetId : appWidgetIds) {
-       //     updateAppWidget(context, appWidgetManager, appWidgetId);
-        //}
+
     }
     public static void updateBakingWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds) {
@@ -79,7 +73,7 @@ public class BakingAppWidget extends AppWidgetProvider {
                 e.printStackTrace();
             }
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_grid_view);
-            //Now update all widgets
+            //update all widgets
 
             BakingAppWidget.updateBakingWidgets(context, appWidgetManager, appWidgetIds);
             super.onReceive(context, intent);
@@ -88,12 +82,10 @@ public class BakingAppWidget extends AppWidgetProvider {
 
     @Override
     public void onEnabled(Context context) {
-        // Enter relevant functionality for when the first widget is created
     }
 
     @Override
     public void onDisabled(Context context) {
-        // Enter relevant functionality for when the last widget is disabled
     }
 }
 

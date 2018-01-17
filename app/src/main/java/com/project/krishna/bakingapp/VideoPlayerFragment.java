@@ -11,8 +11,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -43,6 +45,7 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
     private static final java.lang.String TAG =RecipeVideoActivity.class.getSimpleName() ;
     private static final String PLAYER_POSITION ="player_position" ;
     private static final String PLAYER_STATE ="pstate";
+    private static final String WINDOW ="pwindow" ;
     private SimpleExoPlayer mExoPlayer;
     @BindView(R.id.playerView)
     SimpleExoPlayerView mPlayerView;
@@ -52,12 +55,14 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
     TextView mStepsText;
     @BindView(R.id.tv_video_error)
     TextView errorText;
+    @BindView(R.id.videoImage)
+    ImageView recipeImage;
     private static String videoUrl;
+    private String thumnailUrl;
     private static String longDes;
     boolean videoAvailable=true;
     static boolean playWhenReady=true;
     static long position;
-    Bundle videoPlayerPosition;
     Uri videoUri;
 
     public VideoPlayerFragment(){
@@ -80,6 +85,10 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
         this.longDes = longDes;
     }
 
+    public void setThumnailUrl(String thumnailUrl) {
+        this.thumnailUrl = thumnailUrl;
+    }
+
 
 
     @Nullable
@@ -88,17 +97,22 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
 
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
         ButterKnife.bind(this,rootView);
-        videoPlayerPosition=new Bundle();
         position = C.TIME_UNSET;
+        Log.i("VID1","onCreateView() Called "+position);
+
         if (savedInstanceState != null) {
             position = savedInstanceState.getLong(PLAYER_POSITION, C.TIME_UNSET);
             playWhenReady=savedInstanceState.getBoolean(PLAYER_STATE);
-            Log.i("VID","oncreate"+position);
+            Log.i("VID1","oncreate"+position);
         }
         if(videoUrl.equals("")||videoUrl==null){
             videoAvailable=false;
         }
         mStepsText.setText(longDes);
+        Glide.with(getContext())
+                .load(thumnailUrl)
+                .into(recipeImage);
+
         if(!videoAvailable){
             errorText.setVisibility(View.VISIBLE);
             errorText.setTextColor(Color.WHITE);
@@ -150,6 +164,7 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
     private void initializePlayer(Uri mediaUri) {
         if (mExoPlayer == null) {
             // Create an instance of the ExoPlayer.
+            Log.i("VID1","initialized called");
             TrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl = new DefaultLoadControl();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
@@ -162,11 +177,9 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
             String userAgent = Util.getUserAgent(getContext(), "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
-            Log.i("VID","initializeplayer"+position);
 
             if (position != C.TIME_UNSET){
-                Log.i("VID","seeking");
-
+                Log.i("VID1","seeking"+position);
                 mExoPlayer.seekTo(position);
             }
 
@@ -214,6 +227,8 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
 
     }
 
+
+
     /**
      * Media Session Callbacks, where all external clients control the player.
      */
@@ -246,6 +261,8 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
         super.onSaveInstanceState(outState);
         outState.putLong(PLAYER_POSITION,position);
         outState.putBoolean(PLAYER_STATE,playWhenReady);
+        Log.i("VID1","onSaveInstanceState"+position);
+
     }
 
 
@@ -253,9 +270,11 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
     @Override
     public void onResume() {
         super.onResume();
-        if(videoUri!=null)
-        initializePlayer(videoUri);
-
+        if(videoUri!=null) {
+            Log.i("VID1","onResume"+position);
+            //initializeMediaSession();
+            initializePlayer(videoUri);
+        }
 
     }
 
@@ -265,9 +284,12 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
         if (mExoPlayer != null) {
             position = mExoPlayer.getCurrentPosition();
             playWhenReady=mExoPlayer.getPlayWhenReady();
-            Log.i("VID","onpause"+position);
+            Log.i("VID1","onPause"+position);
             releasePlayer();
+
         }
+        if(mMediaSession!=null)
+            mMediaSession.setActive(false);
     }
 
     /**
@@ -275,6 +297,7 @@ public class VideoPlayerFragment extends Fragment implements ExoPlayer.EventList
      */
     @Override
     public void onDestroy() {
+        Log.i("VID1","onDestroy()");
         super.onDestroy();
         releasePlayer();
         if(mMediaSession!=null)

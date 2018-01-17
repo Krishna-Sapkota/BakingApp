@@ -10,6 +10,16 @@ public class Steps {
     String longDescription;
     String videoUrl;
 
+    public String getThumbnailURL() {
+        return thumbnailURL;
+    }
+
+    public void setThumbnailURL(String thumbnailURL) {
+        this.thumbnailURL = thumbnailURL;
+    }
+
+    String thumbnailURL;
+
     public String getStepId() {
         return stepId;
     }

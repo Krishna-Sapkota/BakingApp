@@ -2,7 +2,6 @@ package com.project.krishna.bakingapp;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -175,7 +174,7 @@ public class MasterRecipeDetailFragment extends Fragment implements RecipeDetail
             mCallback = (OnRecipeStepsClickListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement OnImageClickListener");
+                    + " must implement OnRecipeStepsClickListener");
         }
     }
 

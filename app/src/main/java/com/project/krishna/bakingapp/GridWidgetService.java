@@ -94,10 +94,6 @@ public class GridWidgetService extends RemoteViewsService {
         public boolean hasStableIds() {
             return true;
         }
-
-
-
-
     }
 
 

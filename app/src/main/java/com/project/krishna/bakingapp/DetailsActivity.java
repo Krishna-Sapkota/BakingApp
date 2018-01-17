@@ -1,16 +1,13 @@
 package com.project.krishna.bakingapp;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.GridView;
 import android.widget.LinearLayout;
 
 import com.project.krishna.bakingapp.data.RecipeDetails;
@@ -26,6 +23,7 @@ public class DetailsActivity extends AppCompatActivity implements MasterRecipeDe
     public static final String VIDEO_URL ="video_url" ;
     public static final String LONG_DESCRIPTION ="long_des" ;
     private static final String TAG=DetailsActivity.class.getSimpleName();
+    public static final String THUMBNAIL_URL ="thumbnail" ;
     String recipeId;
     String recipeJson;
     String videoUrl;
@@ -65,8 +63,9 @@ public class DetailsActivity extends AppCompatActivity implements MasterRecipeDe
                 }
                 newFragment.setVideoUrl(details.getStepsList().get(0).getVideoUrl());
                 newFragment.setLongDes(details.getStepsList().get(0).getLongDescription());
+                newFragment.setThumnailUrl(details.getStepsList().get(0).getThumbnailURL());
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.video_container, newFragment)
+                        .replace(R.id.video_container, newFragment)
                         .commit();
             }
         }
@@ -92,14 +91,17 @@ public class DetailsActivity extends AppCompatActivity implements MasterRecipeDe
     public void onStepsSelected(RecipeDetails recipeDetails, int position) {
         String videoURL;
         String longDes;
+        String thumbnailUrl;
         videoURL=recipeDetails.getStepsList().get(position).getVideoUrl();
         longDes=recipeDetails.getStepsList().get(position).getLongDescription();
+        thumbnailUrl=recipeDetails.getStepsList().get(position).getThumbnailURL();
 
         if(twoPane) {
 
             VideoPlayerFragment newFragment = new VideoPlayerFragment();
             newFragment.setVideoUrl(videoURL);
             newFragment.setLongDes(longDes);
+            newFragment.setThumnailUrl(thumbnailUrl);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.video_container, newFragment)
                     .commit();
@@ -108,6 +110,7 @@ public class DetailsActivity extends AppCompatActivity implements MasterRecipeDe
             Intent intent = new Intent(this, RecipeVideoActivity.class);
             intent.putExtra(VIDEO_URL,videoURL);
             intent.putExtra(LONG_DESCRIPTION,longDes);
+            intent.putExtra(THUMBNAIL_URL,thumbnailUrl);
             startActivity(intent);
 
         }

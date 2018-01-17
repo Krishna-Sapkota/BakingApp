@@ -30,6 +30,7 @@ public class ParseUtility {
     private static final String VIDEO ="videoURL";
     private static final String STEP_ID ="id" ;
     private static final String RECIPE_IMAGE ="image" ;
+    private static final String THUMBNAIL ="thumbnailURL" ;
 
 
     public static List<Recipes> getRecipeList(String recipeJson) throws JSONException {
@@ -94,11 +95,13 @@ public class ParseUtility {
                     String shortDes=stepsJSONObject.getString(SHORT_DES);
                     String longDes=stepsJSONObject.getString(LONG_DES);
                     String videoUrl=stepsJSONObject.getString(VIDEO);
+                    String thumbnailURL=stepsJSONObject.getString(THUMBNAIL);
                     Steps steps1=new Steps();
                     steps1.setStepId(stepId);
                     steps1.setShortDescription(shortDes);
                     steps1.setLongDescription(longDes);
                     steps1.setVideoUrl(videoUrl);
+                    steps1.setThumbnailURL(thumbnailURL);
                     stepsList.add(steps1);
                 }
                 String servings=object.getString(RECIPE_SERVINGS);
